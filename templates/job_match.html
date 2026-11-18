@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Job Match · CareerPath IT{% endblock %}
+{% block heading %}Job Match{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Your skills and certifications</h2>
+  <p>{{ match_explanation }}</p>
+  <p class="help">These entries stay in this browser session. They are not stored in MySQL.</p>
+  <form method="post" action="{{ url_for('job_match') }}" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div>
+      <label for="skills">Current skills</label>
+      <textarea id="skills" name="skills" placeholder="Python, SQL, Windows, troubleshooting">{{ skills|join(', ') }}</textarea>
+    </div>
+    <div>
+      <label for="certifications">Certifications</label>
+      <textarea id="certifications" name="certifications" placeholder="CompTIA A+, Network+">{{ certifications|join(', ') }}</textarea>
+    </div>
+    <div class="span-2">
+      <button class="btn" type="submit">Save and compare</button>
+    </div>
+  </form>
+</section>
+
+{% if profile_saved and has_skills %}
+  {% if results %}
+    {% for result in results %}
+    <article class="card match-card">
+      <div class="match-head">
+        <div>
+          <h2>{{ result.job_title }}</h2>
+          <p class="muted">{{ result.company_name }}{% if result.career_category %} · {{ result.career_category }}{% endif %}{% if result.job_type %} · {{ result.job_type }}{% endif %}</p>
+        </div>
+        <p class="match-score">
+          {% if result.percentage is none %}
+            Not calculated
+          {% else %}
+            {{ result.percentage }}%
+          {% endif %}
+        </p>
+      </div>
+      {% if result.required_count == 0 %}
+      <p>{{ no_skills_message }}</p>
+      {% else %}
+      <p>{{ result.matched_count }} of {{ result.required_count }} required skills</p>
+      <h3>Matched</h3>
+      {% if result.matched %}
+      <div class="skill-list">
+        {% for skill in result.matched %}<span class="chip matched">{{ skill }}</span>{% endfor %}
+      </div>
+      {% else %}
+      <p class="muted">None of the listed skills match yet.</p>
+      {% endif %}
+      <h3>Missing</h3>
+      {% if result.missing %}
+      <div class="skill-list">
+        {% for skill in result.missing %}<span class="chip missing">{{ skill }}</span>{% endfor %}
+      </div>
+      <h3>How to qualify</h3>
+      {% for item in result.plan.skills %}
+      <section class="advice">
+        <h4>{{ item.skill }}</h4>
+        <p>{{ item.guidance }}</p>
+        {% if item.links %}
+        <ul class="link-list">
+          {% for link in item.links %}
+          <li><a href="{{ link.url }}" rel="noopener noreferrer">{{ link.label }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </section>
+      {% endfor %}
+      {% if result.plan.certifications %}
+      <h3>Certifications to consider</h3>
+      <p class="help">{{ cert_disclaimer }}</p>
+      {% for cert in result.plan.certifications %}
+      <section class="advice">
+        <h4>{{ cert.name }}</h4>
+        <p>{{ cert.why }}</p>
+        <p class="help">Shown because this job still lists: {{ cert.because|join(', ') }}.</p>
+        <p><a href="{{ cert.url }}" rel="noopener noreferrer">Official certification page</a></p>
+      </section>
+      {% endfor %}
+      {% endif %}
+      {% else %}
+      <p class="muted">Every listed required skill is in your profile.</p>
+      {% endif %}
+      {% endif %}
+      <p><a href="{{ url_for('job_detail', job_id=result.job_id) }}">View job</a></p>
+    </article>
+    {% endfor %}
+  {% else %}
+  <section class="card">
+    <p>No saved jobs to compare. Analyze a job first.</p>
+  </section>
+  {% endif %}
+{% elif profile_saved %}
+<section class="card">
+  <p>Add at least one skill or certification to calculate match percentages.</p>
+</section>
+{% else %}
+<section class="card">
+  <h2>Saved jobs</h2>
+  <p>Save your skills above to rank these jobs. Percentages are hidden until then so an empty profile is not treated as a 0% match.</p>
+  {% if saved_jobs %}
+  <ul class="plain-list">
+    {% for job in saved_jobs %}
+    <li>
+      <a href="{{ url_for('job_detail', job_id=job.job_id) }}">{{ job.job_title }}</a>
+      — {{ job.company_name }}
+      {% if job.requirements.required_skills %}
+      <span class="muted">Requires {{ job.requirements.required_skills|join(', ') }}</span>
+      {% else %}
+      <span class="muted">No required skills listed</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted">No saved jobs yet.</p>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

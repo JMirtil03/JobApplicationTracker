@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Contacts · CareerPath IT{% endblock %}
+{% block heading %}Contacts{% endblock %}
+{% block content %}
+<div class="page-bar">
+  <p class="muted">People connected to the companies you are tracking.</p>
+  <a class="btn" href="{{ url_for('new_contact') }}">Add contact</a>
+</div>
+<section class="card">
+  {% if contacts %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Company</th>
+          <th scope="col">Title</th>
+          <th scope="col">Email</th>
+          <th scope="col">Phone</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contact in contacts %}
+        <tr>
+          <td><a href="{{ url_for('contact_detail', contact_id=contact.contact_id) }}">{{ contact.contact_name }}</a></td>
+          <td>{{ contact.company_name }}</td>
+          <td>{{ contact.title or "—" }}</td>
+          <td>{{ contact.email or "—" }}</td>
+          <td>{{ contact.phone or "—" }}</td>
+          <td class="actions">
+            <a href="{{ url_for('contact_detail', contact_id=contact.contact_id) }}">View</a>
+            <a href="{{ url_for('edit_contact', contact_id=contact.contact_id) }}">Edit</a>
+            <a class="danger" href="{{ url_for('delete_contact', contact_id=contact.contact_id) }}">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No contacts yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'edit' %}Edit contact{% else %}Add contact{% endif %} · CareerPath IT{% endblock %}
+{% block heading %}{% if mode == 'edit' %}Edit contact{% else %}Add contact{% endif %}{% endblock %}
+{% block content %}
+<section class="card">
+  {% if not companies %}
+  <p>Add a company before recording a contact.</p>
+  <a class="btn" href="{{ url_for('new_company') }}">Add company</a>
+  {% else %}
+  {% if errors %}
+  <div class="flash error" role="alert">Correct the highlighted fields.</div>
+  {% endif %}
+  <form method="post" action="{{ form_action }}" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div>
+      <label for="company_id">Company (required)</label>
+      <select id="company_id" name="company_id" required>
+        <option value="">Select a company</option>
+        {% for company in companies %}
+        <option value="{{ company.company_id }}" {% if form.company_id == company.company_id|string %}selected{% endif %}>{{ company.company_name }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.get('company_id') %}<p class="field-error">{{ errors.company_id }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="contact_name">Name (required)</label>
+      <input id="contact_name" name="contact_name" maxlength="100" required value="{{ form.contact_name }}">
+      {% if errors.get('contact_name') %}<p class="field-error">{{ errors.contact_name }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="title">Title</label>
+      <input id="title" name="title" maxlength="100" value="{{ form.title }}">
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" maxlength="100" value="{{ form.email }}">
+      {% if errors.get('email') %}<p class="field-error">{{ errors.email }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="phone">Phone</label>
+      <input id="phone" name="phone" maxlength="20" value="{{ form.phone }}">
+      {% if errors.get('phone') %}<p class="field-error">{{ errors.phone }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="linkedin_url">LinkedIn URL</label>
+      <input id="linkedin_url" name="linkedin_url" type="url" maxlength="200" placeholder="https://" value="{{ form.linkedin_url }}">
+      {% if errors.get('linkedin_url') %}<p class="field-error">{{ errors.linkedin_url }}</p>{% endif %}
+    </div>
+    <div class="span-2">
+      <label for="notes">Notes</label>
+      <textarea id="notes" name="notes">{{ form.notes }}</textarea>
+    </div>
+    <div class="span-2 actions">
+      <button class="btn" type="submit">Save contact</button>
+      <a class="btn secondary" href="{{ url_for('contacts') }}">Cancel</a>
+    </div>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

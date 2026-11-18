@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Jobs · CareerPath IT{% endblock %}
+{% block heading %}Jobs{% endblock %}
+{% block content %}
+<div class="page-bar">
+  <p class="muted">Saved positions and the skills each one asks for.</p>
+  <a class="btn" href="{{ url_for('new_job') }}">Analyze a job</a>
+</div>
+<section class="card">
+  {% if jobs %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Job</th>
+          <th scope="col">Company</th>
+          <th scope="col">Type</th>
+          <th scope="col">Category</th>
+          <th scope="col">Skills</th>
+          <th scope="col">Posted</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for job in jobs %}
+        <tr>
+          <td><a href="{{ url_for('job_detail', job_id=job.job_id) }}">{{ job.job_title }}</a></td>
+          <td>{{ job.company_name }}</td>
+          <td>{{ job.job_type or "—" }}</td>
+          <td>{{ job.requirements.career_category or "—" }}</td>
+          <td>{{ job.requirements.required_skills|length }}</td>
+          <td>{{ job.date_posted|shortdate }}</td>
+          <td class="actions">
+            <a href="{{ url_for('job_detail', job_id=job.job_id) }}">View</a>
+            <a href="{{ url_for('edit_job', job_id=job.job_id) }}">Edit</a>
+            <a class="danger" href="{{ url_for('delete_job', job_id=job.job_id) }}">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No jobs yet. Analyze a description or enter the requirements manually.</p>
+  {% endif %}
+</section>
+{% endblock %}

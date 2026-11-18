@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ job.job_title }} · CareerPath IT{% endblock %}
+{% block heading %}{{ job.job_title }}{% endblock %}
+{% block content %}
+<section class="card">
+  <dl class="details">
+    <div><dt>Company</dt><dd><a href="{{ url_for('company_detail', company_id=job.company_id) }}">{{ job.company_name }}</a></dd></div>
+    <div><dt>Type</dt><dd>{{ job.job_type or "—" }}</dd></div>
+    <div><dt>Category</dt><dd>{{ job.requirements.career_category or "—" }}</dd></div>
+    <div><dt>Salary</dt><dd>{{ salary_text(job.salary_min, job.salary_max) }}</dd></div>
+    <div><dt>Posted</dt><dd>{{ job.date_posted|shortdate }}</dd></div>
+    <div><dt>URL</dt><dd>{% if job.job_url %}<a href="{{ job.job_url }}" rel="noopener noreferrer">{{ job.job_url }}</a>{% else %}—{% endif %}</dd></div>
+  </dl>
+  <h2>Required skills</h2>
+  {% if job.requirements.required_skills %}
+  <div class="skill-list">
+    {% for skill in job.requirements.required_skills %}
+    <span class="chip">{{ skill }}</span>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted">{{ no_skills_message }}</p>
+  {% endif %}
+  {% if job.requirements.description %}
+  <h2>Description</h2>
+  <p class="notes">{{ job.requirements.description }}</p>
+  {% endif %}
+  <div class="actions">
+    <a class="btn" href="{{ url_for('job_match') }}">Compare with my skills</a>
+    <a class="btn secondary" href="{{ url_for('edit_job', job_id=job.job_id) }}">Edit</a>
+    <a class="btn danger" href="{{ url_for('delete_job', job_id=job.job_id) }}">Delete</a>
+  </div>
+</section>
+
+<section class="card">
+  <div class="page-bar">
+    <h2>Applications</h2>
+    <a href="{{ url_for('new_application') }}">Add application</a>
+  </div>
+  {% if applications %}
+  <ul class="plain-list">
+    {% for application in applications %}
+    <li>
+      <a href="{{ url_for('application_detail', application_id=application.application_id) }}">{{ application.application_date|shortdate }}</a>
+      <span class="badge {{ application.status }}">{{ application.status }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted">No applications recorded for this job.</p>
+  {% endif %}
+</section>
+{% endblock %}

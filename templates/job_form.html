@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'edit' %}Edit job{% else %}Analyze a job{% endif %} · CareerPath IT{% endblock %}
+{% block heading %}{% if mode == 'edit' %}Edit job{% else %}Analyze a job{% endif %}{% endblock %}
+{% block content %}
+<section class="card">
+  <p class="muted">Enter the role yourself, or paste a description and identify skills before you save. Skill identification checks a curated list. It is not a complete reading of the posting, and it does not use a paid AI service.</p>
+  {% if errors %}
+  <div class="flash error" role="alert">Correct the highlighted fields.</div>
+  {% endif %}
+  <form method="post" action="{{ form_action }}" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="span-2">
+      <label for="description">Job description</label>
+      <textarea id="description" name="description" placeholder="Paste the full posting here, or leave this blank and type the skills below.">{{ form.description }}</textarea>
+      <p class="help">The text you save is stored in the job requirements. You can edit it before saving.</p>
+    </div>
+    <div class="span-2">
+      <button class="btn secondary" type="submit" name="action" value="extract" formnovalidate>Identify skills in the description</button>
+    </div>
+    <div class="span-2">
+      <label for="job_title">Job title (required)</label>
+      <input id="job_title" name="job_title" maxlength="100" required value="{{ form.job_title }}">
+      {% if errors.get('job_title') %}<p class="field-error">{{ errors.job_title }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="company_id">Existing company</label>
+      <select id="company_id" name="company_id">
+        <option value="">Select a company</option>
+        {% for company in companies %}
+        <option value="{{ company.company_id }}" {% if form.company_id == company.company_id|string %}selected{% endif %}>{{ company.company_name }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.get('company_id') %}<p class="field-error">{{ errors.company_id }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="new_company_name">Or new company name</label>
+      <input id="new_company_name" name="new_company_name" maxlength="100" value="{{ form.new_company_name }}">
+      {% if errors.get('new_company_name') %}<p class="field-error">{{ errors.new_company_name }}</p>{% endif %}
+      <p class="help">Use one option. You can add the company's other details afterward.</p>
+    </div>
+    <div>
+      <label for="job_type">Job type (required)</label>
+      <select id="job_type" name="job_type" required>
+        {% for job_type in job_types %}
+        <option value="{{ job_type }}" {% if form.job_type == job_type %}selected{% endif %}>{{ job_type }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.get('job_type') %}<p class="field-error">{{ errors.job_type }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="career_category">Career category</label>
+      <select id="career_category" name="career_category">
+        <option value="">Not specified</option>
+        {% for category in categories %}
+        <option value="{{ category }}" {% if form.career_category == category %}selected{% endif %}>{{ category }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.get('career_category') %}<p class="field-error">{{ errors.career_category }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="salary_min">Minimum salary</label>
+      <input id="salary_min" name="salary_min" inputmode="numeric" value="{{ form.salary_min }}">
+      {% if errors.get('salary_min') %}<p class="field-error">{{ errors.salary_min }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="salary_max">Maximum salary</label>
+      <input id="salary_max" name="salary_max" inputmode="numeric" value="{{ form.salary_max }}">
+      {% if errors.get('salary_max') %}<p class="field-error">{{ errors.salary_max }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="job_url">Job URL</label>
+      <input id="job_url" name="job_url" type="url" maxlength="300" placeholder="https://" value="{{ form.job_url }}">
+      {% if errors.get('job_url') %}<p class="field-error">{{ errors.job_url }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="date_posted">Date posted</label>
+      <input id="date_posted" name="date_posted" type="date" value="{{ form.date_posted }}">
+      {% if errors.get('date_posted') %}<p class="field-error">{{ errors.date_posted }}</p>{% endif %}
+    </div>
+    <div class="span-2">
+      <p class="label-text">Required skills to save</p>
+      {% if form.skills %}
+      <div class="skill-list">
+        {% for skill in form.skills %}
+        <label class="skill-check">
+          <input type="checkbox" name="skills" value="{{ skill }}" checked>
+          {{ skill }}
+        </label>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="muted">No skills identified yet. Paste a description or add skills below.</p>
+      {% endif %}
+    </div>
+    <div class="span-2">
+      <label for="extra_skills">Add or correct skills</label>
+      <textarea id="extra_skills" name="extra_skills" placeholder="Python, SQL, Active Directory">{{ form.extra_skills }}</textarea>
+      <p class="help">Separate skills with commas. Abbreviations such as AD, AWS, and SQL are recognized. Uncheck a skill above to remove it. Unknown skills are allowed.</p>
+    </div>
+    <div class="span-2 actions">
+      <button class="btn" type="submit" name="action" value="save">Save job</button>
+      <a class="btn secondary" href="{{ url_for('jobs') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

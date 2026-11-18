@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'edit' %}Edit application{% else %}Add application{% endif %} · CareerPath IT{% endblock %}
+{% block heading %}{% if mode == 'edit' %}Edit application{% else %}Add application{% endif %}{% endblock %}
+{% block content %}
+<section class="card">
+  {% if not jobs %}
+  <p>Add a job before recording an application.</p>
+  <a class="btn" href="{{ url_for('new_job') }}">Analyze a job</a>
+  {% else %}
+  {% if errors %}
+  <div class="flash error" role="alert">Correct the highlighted fields.</div>
+  {% endif %}
+  <form method="post" action="{{ form_action }}" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="span-2">
+      <label for="job_id">Job (required)</label>
+      <select id="job_id" name="job_id" required>
+        <option value="">Select a job</option>
+        {% for job in jobs %}
+        <option value="{{ job.job_id }}" {% if form.job_id == job.job_id|string %}selected{% endif %}>{{ job.job_title }} — {{ job.company_name }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.get('job_id') %}<p class="field-error">{{ errors.job_id }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="application_date">Application date (required)</label>
+      <input id="application_date" name="application_date" type="date" required value="{{ form.application_date }}">
+      {% if errors.get('application_date') %}<p class="field-error">{{ errors.application_date }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="status">Status (required)</label>
+      <select id="status" name="status" required>
+        {% for status in statuses %}
+        <option value="{{ status }}" {% if form.status == status %}selected{% endif %}>{{ status }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.get('status') %}<p class="field-error">{{ errors.status }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="resume_version">Resume version</label>
+      <input id="resume_version" name="resume_version" maxlength="50" value="{{ form.resume_version }}">
+    </div>
+    <div class="check-row">
+      <label class="skill-check" for="cover_letter_sent">
+        <input id="cover_letter_sent" type="checkbox" name="cover_letter_sent" value="1" {% if form.cover_letter_sent %}checked{% endif %}>
+        Cover letter sent
+      </label>
+    </div>
+    <div class="span-2">
+      <h2>Interview</h2>
+      <p class="help">These fields are stored together in the interview data for this application.</p>
+    </div>
+    <div>
+      <label for="interview_date">Interview date</label>
+      <input id="interview_date" name="interview_date" type="date" value="{{ form.interview_date }}">
+      {% if errors.get('interview_date') %}<p class="field-error">{{ errors.interview_date }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="interview_type">Interview type</label>
+      <select id="interview_type" name="interview_type">
+        <option value="">Not set</option>
+        {% for interview_type in interview_types %}
+        <option value="{{ interview_type }}" {% if form.interview_type == interview_type %}selected{% endif %}>{{ interview_type }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.get('interview_type') %}<p class="field-error">{{ errors.interview_type }}</p>{% endif %}
+    </div>
+    <div class="span-2">
+      <label for="interviewer">Interviewer</label>
+      <input id="interviewer" name="interviewer" maxlength="100" value="{{ form.interviewer }}">
+    </div>
+    <div class="span-2">
+      <label for="interview_notes">Interview notes</label>
+      <textarea id="interview_notes" name="interview_notes">{{ form.interview_notes }}</textarea>
+    </div>
+    <div class="span-2 actions">
+      <button class="btn" type="submit">Save application</button>
+      <a class="btn secondary" href="{{ url_for('applications') }}">Cancel</a>
+    </div>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

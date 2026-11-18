@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Applications · CareerPath IT{% endblock %}
+{% block heading %}Applications{% endblock %}
+{% block content %}
+<div class="page-bar">
+  <p class="muted">Where you applied and what happened next.</p>
+  <a class="btn" href="{{ url_for('new_application') }}">Add application</a>
+</div>
+<section class="card">
+  {% if applications %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Job</th>
+          <th scope="col">Company</th>
+          <th scope="col">Status</th>
+          <th scope="col">Resume</th>
+          <th scope="col">Cover letter</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for application in applications %}
+        <tr>
+          <td>{{ application.application_date|shortdate }}</td>
+          <td><a href="{{ url_for('application_detail', application_id=application.application_id) }}">{{ application.job_title }}</a></td>
+          <td>{{ application.company_name }}</td>
+          <td><span class="badge {{ application.status }}">{{ application.status }}</span></td>
+          <td>{{ application.resume_version or "—" }}</td>
+          <td>{{ "Yes" if application.cover_letter_sent else "No" }}</td>
+          <td class="actions">
+            <a href="{{ url_for('application_detail', application_id=application.application_id) }}">View</a>
+            <a href="{{ url_for('edit_application', application_id=application.application_id) }}">Edit</a>
+            <a class="danger" href="{{ url_for('delete_application', application_id=application.application_id) }}">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No applications yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

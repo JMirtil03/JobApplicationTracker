@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'edit' %}Edit company{% else %}Add company{% endif %} · CareerPath IT{% endblock %}
+{% block heading %}{% if mode == 'edit' %}Edit company{% else %}Add company{% endif %}{% endblock %}
+{% block content %}
+<section class="card">
+  {% if errors %}
+  <div class="flash error" role="alert">Correct the highlighted fields.</div>
+  {% endif %}
+  <form method="post" action="{{ form_action }}" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="span-2">
+      <label for="company_name">Company name (required)</label>
+      <input id="company_name" name="company_name" maxlength="100" required value="{{ form.company_name }}">
+      {% if errors.get('company_name') %}<p class="field-error">{{ errors.company_name }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="industry">Industry</label>
+      <input id="industry" name="industry" maxlength="50" value="{{ form.industry }}">
+    </div>
+    <div>
+      <label for="website">Website</label>
+      <input id="website" name="website" type="url" maxlength="200" placeholder="https://" value="{{ form.website }}">
+      {% if errors.get('website') %}<p class="field-error">{{ errors.website }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="city">City</label>
+      <input id="city" name="city" maxlength="50" value="{{ form.city }}">
+    </div>
+    <div>
+      <label for="state">State</label>
+      <input id="state" name="state" maxlength="50" value="{{ form.state }}">
+    </div>
+    <div class="span-2">
+      <label for="notes">Notes</label>
+      <textarea id="notes" name="notes">{{ form.notes }}</textarea>
+    </div>
+    <div class="span-2 actions">
+      <button class="btn" type="submit">Save company</button>
+      <a class="btn secondary" href="{{ url_for('companies') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

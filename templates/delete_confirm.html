@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} · CareerPath IT{% endblock %}
+{% block heading %}{{ heading }}{% endblock %}
+{% block content %}
+<section class="card">
+  <p>{{ message }}</p>
+  {% if blocked_reason %}
+  <div class="flash error" role="alert">{{ blocked_reason }}</div>
+  {% endif %}
+  <form method="post" action="{{ action }}" class="actions">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    {% if not blocked_reason %}
+    <button class="btn danger" type="submit">Delete</button>
+    {% endif %}
+    <a class="btn secondary" href="{{ cancel_url }}">Cancel</a>
+  </form>
+</section>
+{% endblock %}

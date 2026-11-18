@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Application · CareerPath IT{% endblock %}
+{% block heading %}Application{% endblock %}
+{% block content %}
+<section class="card">
+  <dl class="details">
+    <div><dt>Job</dt><dd><a href="{{ url_for('job_detail', job_id=application.job_id) }}">{{ application.job_title }}</a></dd></div>
+    <div><dt>Company</dt><dd><a href="{{ url_for('company_detail', company_id=application.company_id) }}">{{ application.company_name }}</a></dd></div>
+    <div><dt>Date</dt><dd>{{ application.application_date|shortdate }}</dd></div>
+    <div><dt>Status</dt><dd><span class="badge {{ application.status }}">{{ application.status }}</span></dd></div>
+    <div><dt>Resume version</dt><dd>{{ application.resume_version or "—" }}</dd></div>
+    <div><dt>Cover letter sent</dt><dd>{{ "Yes" if application.cover_letter_sent else "No" }}</dd></div>
+    <div><dt>Interview date</dt><dd>{{ application.interview_data.interview_date|shortdate }}</dd></div>
+    <div><dt>Interview type</dt><dd>{{ application.interview_data.interview_type or "—" }}</dd></div>
+    <div><dt>Interviewer</dt><dd>{{ application.interview_data.interviewer or "—" }}</dd></div>
+  </dl>
+  {% if application.interview_data.notes %}
+  <h2>Interview notes</h2>
+  <p class="notes">{{ application.interview_data.notes }}</p>
+  {% endif %}
+  <div class="actions">
+    <a class="btn" href="{{ url_for('edit_application', application_id=application.application_id) }}">Edit</a>
+    <a class="btn danger" href="{{ url_for('delete_application', application_id=application.application_id) }}">Delete</a>
+    <a class="btn secondary" href="{{ url_for('applications') }}">Back to applications</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · CareerPath IT{% endblock %}
+{% block heading %}Dashboard{% endblock %}
+{% block content %}
+<section class="card callout">
+  <h2>Analyze a job</h2>
+  <p>Paste a description or enter the requirements yourself. CareerPath IT lists the skills to review, then compares them with the skills you already have.</p>
+  <a class="btn" href="{{ url_for('new_job') }}">Analyze a job</a>
+</section>
+
+<section class="stats" aria-label="Summary">
+  <article class="card stat">
+    <p class="stat-value">{{ stats.applications }}</p>
+    <p class="stat-label">Applications</p>
+  </article>
+  <article class="card stat">
+    <p class="stat-value">{{ stats.interviews }}</p>
+    <p class="stat-label">Interviews</p>
+  </article>
+  <article class="card stat">
+    <p class="stat-value">{{ stats.jobs }}</p>
+    <p class="stat-label">Saved jobs</p>
+  </article>
+  <article class="card stat">
+    <p class="stat-value">{{ stats.offers }}</p>
+    <p class="stat-label">Offers</p>
+  </article>
+</section>
+
+<section class="card">
+  <div class="page-bar">
+    <h2>Recent applications</h2>
+    <a href="{{ url_for('applications') }}">View all</a>
+  </div>
+  {% if recent %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Job</th>
+          <th scope="col">Company</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in recent %}
+        <tr>
+          <td>{{ item.application_date|shortdate }}</td>
+          <td><a href="{{ url_for('application_detail', application_id=item.application_id) }}">{{ item.job_title }}</a></td>
+          <td>{{ item.company_name }}</td>
+          <td><span class="badge {{ item.status }}">{{ item.status }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No applications yet. Save a job, then record when you apply.</p>
+  {% endif %}
+</section>
+{% endblock %}

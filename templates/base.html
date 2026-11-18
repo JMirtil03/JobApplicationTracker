@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CareerPath IT{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="{{ url_for('dashboard') }}">
+        <span class="brand-name">CareerPath IT</span>
+        <span class="brand-tagline">Understand the role. Build the skills. Advance your career.</span>
+      </a>
+      <nav aria-label="Primary">
+        <a class="{{ 'active' if active_page == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a class="{{ 'active' if active_page == 'companies' else '' }}" href="{{ url_for('companies') }}">Companies</a>
+        <a class="{{ 'active' if active_page == 'jobs' else '' }}" href="{{ url_for('jobs') }}">Jobs</a>
+        <a class="{{ 'active' if active_page == 'applications' else '' }}" href="{{ url_for('applications') }}">Applications</a>
+        <a class="{{ 'active' if active_page == 'contacts' else '' }}" href="{{ url_for('contacts') }}">Contacts</a>
+        <a class="{{ 'active' if active_page == 'job_match' else '' }}" href="{{ url_for('job_match') }}">Job Match</a>
+      </nav>
+    </aside>
+    <div class="main">
+      <header class="topbar">
+        <button type="button" class="menu-btn" id="menu-button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+        <h1>{% block heading %}CareerPath IT{% endblock %}</h1>
+      </header>
+      <main class="content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="flash {{ category }}" role="status">{{ message }}</div>
+          {% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </main>
+      <footer>Developed by Jonathan Mirtil.</footer>
+    </div>
+  </div>
+  <script>
+    var menuButton = document.getElementById("menu-button");
+    var sidebar = document.getElementById("sidebar");
+    menuButton.addEventListener("click", function () {
+      var open = sidebar.classList.toggle("open");
+      menuButton.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  </script>
+</body>
+</html>
